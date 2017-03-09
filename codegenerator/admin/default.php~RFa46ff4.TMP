@@ -1,0 +1,508 @@
+<?php
+
+/*
+ * This is main file for plugin
+ * and open the template in the editor.
+ */
+
+
+?>
+<?php 
+if($_REQUEST['action']=="generatecode")
+{
+  echo '<pre>'; print_r($_REQUEST);
+}
+?>
+<script type="text/javascript">
+     jQuery(document).ready(function(){
+         jQuery('#generate_code_for').change(function(){
+             var tab = jQuery(this).val();
+             if(tab)
+                 {
+                     jQuery('.tabs').css('display','none');
+                     jQuery('#response_code').find('code').html('');
+                     jQuery('#response_code').css('display','none');
+                     jQuery('#tab-'+tab).show('slow');
+                 }
+         });
+         jQuery("#generatecode").validationEngine();
+         jQuery("#generatecode").submit(function(e){
+			var formData = jQuery('#generatecode').serializeArray();
+            
+            if(jQuery("#generatecode").validationEngine('validate'))
+             {
+                jQuery.ajax({
+                    type:'POST',
+                    url: "<?php echo get_bloginfo('url'); ?>/wp-admin/admin-ajax.php?action=generatecode",
+                    data:formData,
+                    beforeSend:function(){
+                        jQuery('#generatecode').append('<span id="generatecode_ajax"><img src="<?php echo get_bloginfo('url'); ?>/wp-includes/images/wpspin.gif" alt=""/></span>');
+                    },
+                    success:function(response){
+                        if(response)
+                            {
+                                jQuery('#generatecode').find('#generatecode_ajax').remove();
+                                jQuery('#response_code').css('display','block');
+                                jQuery('#response_code').find('code').html(response);
+                                jQuery("html, body").animate({ scrollTop: jQuery("#response_code").offset().top  }, 1000);
+                            }
+                    },
+                    error: function(MLHttpRequest, status, error){  
+                        alert(error);  
+                    }  
+                });
+             }
+             return false;
+         });
+     });
+</script>    
+<div id="wpbody">
+  <div tabindex="0" aria-label="Main content" id="wpbody-content">
+    <div class="wrap">
+      <div class="icon32" id="icon-options-general"><br></div>
+      <h2 id="add-new-user">Generate Custom Code</h2>
+      <hr noshade="noshade" />
+      
+      <div id="ajax-response"></div>
+      <form class="validate" id="generatecode" name="generatecode" method="post" action="">
+        <!--<input type="hidden" value="generatecode" name="action">-->
+        <table class="form-table">
+          <tbody>
+            <tr class="form-field">
+              <th scope="row"><label for="role">Generate Code For </label></th>
+              <td>
+              <select id="generate_code_for" name="generate_code_for" class="validate[required]">
+                  <option value="">Select Type</option>
+                  <?php 
+                  foreach($this->codeType as $k=>$item)
+                  {
+                      echo '<option value="'.$k.'">'.$item.'</option>';
+                  }
+                  ?>
+              </select>
+             </td>
+            </tr>
+          </tbody>
+        </table>
+        <div id="tab-1" class="tabs" style="display:none;">
+           <table class="form-table">
+            <tbody>
+              <tr class="form-field">
+                <th><label>Custom Post Type Name<span class="description">(required)</span></label></th>
+                <td>
+                    <input type="text" name="cpt[name]" style="width: 20%;" class="validate[required]" id="cpt_name" value="">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>CPT Label<span class="description">(required)</span></label></th>
+                <td>
+                    <input type="text" name="cpt[label]" class="validate[required]" style="width: 20%;" id="cpt_label" value="">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Add New Label</label></th>
+                <td>
+                    <input type="text" name="cpt[add_new_label]" style="width: 20%;" id="cpt_add_new_label" value="Add New" onblur="if(this.value == '') { this.value='Add New'}" onfocus="if (this.value == 'Add New') {this.value=''}">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Add New Item Label</label></th>
+                <td>
+                    <input type="text" name="cpt[add_new_item_label]" style="width: 20%;" id="cpt_add_new_item_label" value="Add New Post" onblur="if(this.value == '') { this.value='Add New Post'}" onfocus="if (this.value == 'Add New Post') {this.value=''}">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Edit Label</label></th>
+                <td>
+                    <input type="text" name="cpt[edit_label]" style="width: 20%;" id="cpt_edit_label" value="Edit" onblur="if(this.value == '') { this.value='Edit'}" onfocus="if (this.value == 'Edit') {this.value=''}">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Edit Item Label</label></th>
+                <td>
+                    <input type="text" name="cpt[edit_item_label]" style="width: 20%;" id="cpt_edit_item_label" value="Edit Post" onblur="if(this.value == '') { this.value='Edit Post'}" onfocus="if (this.value == 'Edit Post') {this.value=''}">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>View Item Label</label></th>
+                <td>
+                    <input type="text" name="cpt[view_item_label]" style="width: 20%;" id="cpt_view_item_label" value="View Post" onblur="if(this.value == '') { this.value='View Post'}" onfocus="if (this.value == 'View Post') {this.value=''}">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Search Item Label</label></th>
+                <td>
+                    <input type="text" name="cpt[search_item_label]" style="width: 20%;" id="cpt_search_item_label" value="Search Post" onblur="if(this.value == '') { this.value='Search Post'}" onfocus="if (this.value == 'Search Post') {this.value=''}">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Not Found Label</label></th>
+                <td>
+                    <input type="text" name="cpt[not_found_label]" style="width: 20%;" id="cpt_not_found_label" value="No Post Found" onblur="if(this.value == '') { this.value='No Post Found'}" onfocus="if (this.value == 'No Post Found') {this.value=''}">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Not Found Trash Label</label></th>
+                <td>
+                    <input type="text" name="cpt[not_found_trash_label]" style="width: 20%;" id="cpt_not_found_trash_label" value="No Post Found in Trash" onblur="if(this.value == '') { this.value='No Post Found in Trash'}" onfocus="if (this.value == 'No Post Found in Trash') {this.value=''}">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Parent Label</label></th>
+                <td>
+                    <input type="text" name="cpt[parent_label]" style="width: 20%;" id="cpt_parent_label" value="Parent Post" onblur="if(this.value == '') { this.value='Parent Post'}" onfocus="if (this.value == 'Parent Post') {this.value=''}">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Supports<span class="description">(required)</span></label></th>
+                <td>
+                    <select name="cpt[supports][]" id="cpt_supports" multiple="multiple" style="width: 20%;" class="validate[required]">
+                        <option value="'title'">Title</option>
+                        <option value="'editor'">Editor</option>
+                        <option value="'author'">Author</option>
+                        <option value="'thumbnail'">Thumbnail</option>
+                        <option value="'excerpt'">Excerpt</option>
+                        <option value="'trackbacks'">Trackbacks</option>
+                        <option value="'custom-fields'">Custom Fields</option>
+                        <option value="'comments'">Comments</option>
+                        <option value="'revisions'">Revisions</option>
+                        <option value="'page-attributes'">Page Attributes</option>
+                    </select>
+               </td>
+              </tr>
+            </tbody>
+          </table>    
+        </div>
+        <div id="tab-2" class="tabs" style="display:none;">
+           <table class="form-table">
+            <tbody>
+              <tr class="form-field">
+                <th><label>Taxonomy Name<span class="description">(required)</span></label></th>
+                <td>
+                    <input type="text" name="taxonomy[name]" style="width: 20%;" id="taxonomy_name" value="" class="validate[required]">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Taxonomy Slug<span class="description">(required)</span></label></th>
+                <td>
+                    <input type="text" name="taxonomy[slug]" style="width: 20%;" class="validate[required]" id="taxonomy_slug" value="">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Post Type for Taxonomy<span class="description">(required)</span></label></th>
+                <td>
+                    <input type="text" name="taxonomy[post_type]" class="validate[required]" style="width: 20%;" id="taxonomy_post_type" value="">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Taxonomy Singular Name<span class="description">(required)</span></label></th>
+                <td>
+                    <input type="text" name="taxonomy[singular_name]" style="width: 20%;" id="taxonomy_singular_name" value="" class="validate[required]">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Menu Name<span class="description">(required)</span></label></th>
+                <td>
+                    <input type="text" name="taxonomy[menu_name]" style="width: 20%;" id="taxonomy_menu_name" value="" class="validate[required]">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Search Label</label></th>
+                <td>
+                    <input type="text" name="taxonomy[search_label]" style="width: 20%;" id="taxonomy_search_label" value="Search" onblur="if(this.value == '') { this.value='Search'}" onfocus="if (this.value == 'Search') {this.value=''}">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Popular Label</label></th>
+                <td>
+                    <input type="text" name="taxonomy[popular_label]" style="width: 20%;" id="taxonomy_popular_label" value="Popular" onblur="if(this.value == '') { this.value='Popular'}" onfocus="if (this.value == 'Popular') {this.value=''}">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>All Item Label</label></th>
+                <td>
+                    <input type="text" name="taxonomy[all_item_label]" style="width: 20%;" id="taxonomy_all_item_label" value="All" onblur="if(this.value == '') { this.value='All'}" onfocus="if (this.value == 'All') {this.value=''}">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Parent Label</label></th>
+                <td>
+                    <input type="text" name="taxonomy[parent_label]" style="width: 20%;" id="taxonomy_parent_label" value="Parent" onblur="if(this.value == '') { this.value='Parent'}" onfocus="if (this.value == 'Parent') {this.value=''}">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Parent Colon Label</label></th>
+                <td>
+                    <input type="text" name="taxonomy[parent_colon_label]" style="width: 20%;" id="taxonomy_parent_colon_label" value="Parent" onblur="if(this.value == '') { this.value='Parent'}" onfocus="if (this.value == 'Parent') {this.value=''}">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Edit Label</label></th>
+                <td>
+                    <input type="text" name="taxonomy[edit_label]" style="width: 20%;" id="taxonomy_edit_label" value="Edit" onblur="if(this.value == '') { this.value='Edit'}" onfocus="if (this.value == 'Edit') {this.value=''}">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Update Label</label></th>
+                <td>
+                    <input type="text" name="taxonomy[update_label]" style="width: 20%;" id="taxonomy_update_label" value="Update" onblur="if(this.value == '') { this.value='Update'}" onfocus="if (this.value == 'Update') {this.value=''}">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Add New Label</label></th>
+                <td>
+                    <input type="text" name="taxonomy[add_new_label]" style="width: 20%;" id="taxonomy_add_new_label" value="Add New" onblur="if(this.value == '') { this.value='Add New'}" onfocus="if (this.value == 'Add New') {this.value=''}">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>New Label</label></th>
+                <td>
+                    <input type="text" name="taxonomy[new_label]" style="width: 20%;" id="taxonomy_new_label" value="New" onblur="if(this.value == '') { this.value='New'}" onfocus="if (this.value == 'New') {this.value=''}">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Add or Remove Label</label></th>
+                <td>
+                    <input type="text" name="taxonomy[add_remove_label]" style="width: 20%;" id="taxonomy_add_remove_label" value="Add or Remove" onblur="if(this.value == '') { this.value='Add or Remove'}" onfocus="if (this.value == 'Add or Remove') {this.value=''}">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Choose From Most Used Label</label></th>
+                <td>
+                    <input type="text" name="taxonomy[choose_most_used_label]" style="width: 20%;" id="taxonomy_choose_most_used_label" value="Choose from the most used" onblur="if(this.value == '') { this.value='Choose from the most used'}" onfocus="if (this.value == 'Choose from the most used') {this.value=''}">
+               </td>
+              </tr>
+            </tbody>
+          </table>    
+        </div>
+        <div id="tab-3" class="tabs" style="display:none;">
+        <p>This will generate only sample code for metaboxes.</p>
+           <table class="form-table">
+            <tbody>
+              <tr class="form-field">
+                <th><label>Meta Box Html ID<span class="description">(required)</span></label></th>
+                <td>
+                    <input type="text" name="metabox[html_id]" style="width: 20%;" id="metabox_html_id" value="custom_box_<?php echo mt_rand();?>" readonly="readonly" class="validate[required]">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Metabox Title<span class="description">(required)</span></label></th>
+                <td>
+                    <input type="text" name="metabox[title]" style="width: 20%;" class="validate[required]" id="metabox_title" value="">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Post Type<span class="description">(required)</span></label></th>
+                <td>
+                    <input type="text" name="metabox[post_type]" class="validate[required]" style="width: 20%;" id="metabox_post_type" value="">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Meta Box Place</label></th>
+                <td>
+                    <select name="metabox[place]" id="metabox_place" style="width: 20%;">
+                        <option value="normal">Normal</option>
+                        <option value="advanced">Advanced</option>
+                        <option value="side">Side</option>
+                    </select>
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Meta Box Priority</label></th>
+                <td>
+                    <select name="metabox[priority]" id="metabox_priority" style="width: 20%;">
+                        <option value="high">High</option>
+                        <option value="core">Core</option>
+                        <option value="default">Default</option>
+                        <option value="low">Low</option>
+                    </select>
+               </td>
+              </tr>
+            </tbody>
+          </table>    
+        </div>
+        <div id="tab-4" class="tabs" style="display:none;">
+          <p>This will generate only sample code for WordPress default Ajax.</p>
+          <p>This will generate code for any HTML Form.</p>
+           <table class="form-table">
+            <tbody>
+              <tr class="form-field">
+                <th><label>HTML Form ID<span class="description">(required)</span></label></th>
+                <td>
+                    <input type="text" name="wp_ajax[form_id]" style="width: 20%;" id="wp_ajax_form_id" value="" class="validate[required]">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>HTML Form Action<span class="description">(required)</span></label></th>
+                <td>
+                    <input type="text" name="wp_ajax[form_action]" style="width: 20%;" id="wp_ajax_form_action" value="" class="validate[required]">
+                    <span class="description">Action example: contactForm,voating,newuser.</span>
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Form Response Selector<span class="description">(required)</span></label></th>
+                <td>
+                    <input type="text" name="wp_ajax[form_res_selector]" style="width: 20%;" id="wp_ajax_form_res_selector" value="" class="validate[required]">
+                    <span class="description">Enter response class or id example: ".response" or "#response".</span>
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Show Form Loader</label></th>
+                <td>
+                    <select name="wp_ajax[form_loader]" id="wp_ajax_form_loader" style="width: 20%;">
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Ajax For</label></th>
+                <td>
+                    <select name="wp_ajax[ajax_for]" id="wp_ajax_ajax_for" style="width: 20%;">
+                        <option value="wp">Wordpress(Front)</option>
+                        <option value="admin">Wordpress(Admin)</option>
+                    </select>
+               </td>
+              </tr>
+            </tbody>
+            </table>  
+        </div>
+        <div id="tab-5" class="tabs" style="display:none;">
+          <p>This will generate only sample code for WordPress Widgets only for Text field.</p>
+          <table class="form-table">
+            <tbody>
+              <tr class="form-field">
+                <th><label>Widget ID<span class="description">(required)</span></label></th>
+                <td>
+                    <input type="text" name="widget[widget_id]" style="width: 20%;" id="widget_id" value="<?php echo strtoupper("widget_".substr(md5(rand()), 0, 7));?>" readonly="readonly" class="validate[required]">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Widget Title<span class="description">(required)</span></label></th>
+                <td>
+                    <input type="text" name="widget[title]" style="width: 20%;" id="widget_title" value="" class="validate[required]">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Widget Description<span class="description">(required)</span></label></th>
+                <td>
+                    <textarea name="widget[desc]" style="width: 20%;" id="widget_desc" class="validate[required]"></textarea>
+                </td>
+              </tr>
+            </tbody>
+            </table>  
+        </div>
+        <div id="tab-6" class="tabs" style="display:none;">
+          <p>This will generate only sample code for WordPress Hooks.</p>
+          <table class="form-table">
+            <tbody>
+              <tr class="form-field">
+                <th><label>Custom Hoock Name<span class="description">(required)</span></label></th>
+                <td>
+                    <input type="text" name="hook[hook_name]" style="width: 20%;" id="hook_name" value="" class="validate[required]">
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Hook Argument</label></th>
+                <td>
+                    <select name="hook[argument]" id="hook_argument" style="width: 20%;">
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+               </td>
+              </tr>
+            </tbody>
+            </table>  
+        </div>
+        <div id="tab-7" class="tabs" style="display:none;">
+          <p>This will generate only sample code for Custom WordPress Media Uploader.</p>
+          <table class="form-table">
+            <tbody>
+             <tr class="form-field">
+                <th><label>Enter Selector<span class="description">(required)</span></label></th>
+                <td>
+                    <input type="text" name="media[selector]" style="width: 20%;" id="media_selector" value="" class="validate[required]">
+                    <p><span class="description">Enter selector class or id example: ".openFrame" or "#openFrame".</span></p>
+               </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Media Frame Title</label></th>
+                <td>
+                    <input type="text" name="media[title]" style="width: 20%;" id="media_title" value="Media Uploader" onblur="if(this.value == '') { this.value='Media Uploader'}" onfocus="if (this.value == 'Media Uploader') {this.value=''}">
+                </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Media Frame Button Text</label></th>
+                <td>
+                    <input type="text" name="media[button_text]" style="width: 20%;" id="media_button_text" value="Select" onblur="if(this.value == '') { this.value='Select'}" onfocus="if (this.value == 'Select') {this.value=''}">
+                </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Multiple File Uploader</label></th>
+                <td>
+                    <select name="media[multiple]" id="media_multiple" style="width: 20%;">
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+               </td>
+              </tr>
+            </tbody>
+            </table>  
+        </div>
+        <div id="tab-8" class="tabs" style="display:none;">
+          <table class="form-table">
+            <tbody>
+             <tr class="form-field">
+                <th><label>Post Type<span class="description">(required)</span></label></th>
+                <td>
+                    <input type="text" name="admin_order[post_type]" style="width: 20%;" id="admin_order_post_type" value="" class="validate[required]">
+                </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Custom Order By</label></th>
+                <td>
+                    <select name="admin_order[orderby]" id="admin_order_orderby" style="width: 20%;">
+                        <option value="ID">ID</option>
+                        <option value="author">Author</option>
+                        <option value="title">Title</option>
+                        <option value="name">Name(slug)</option>
+                        <option value="date">Date</option>
+                        <option value="modified">Modified</option>
+                        <option value="title">Title</option>
+                        <option value="title">Title</option>
+                        <option value="title">Title</option>
+                        <option value="title">Title</option>
+                    </select>
+                </td>
+              </tr>
+              <tr class="form-field">
+                <th><label>Custom Order</label></th>
+                <td>
+                    <select name="admin_order[order]" id="admin_order_order" style="width: 20%;">
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+                </td>
+              </tr>
+            </tbody>
+            </table>  
+        </div>
+        <p class="submit">
+          <input type="submit" value="Generate" class="button button-primary"  id="generatecodesub" name="generatecode">
+          <span id="ajax_loader"></span>
+        </p>
+      </form>
+    </div>
+    <div class="clear"></div>
+    <div class="generated_code">
+        <div id="response_code" style="display: none;">
+                 <h3>Generated Code</h3>
+                 <p>Select all then paste in your file.</p>
+                 <pre><code></code></pre>     
+             </div>      
+    </div>
+  </div>
+  <!-- wpbody-content -->
+  <div class="clear"></div>
+  
+</div>
