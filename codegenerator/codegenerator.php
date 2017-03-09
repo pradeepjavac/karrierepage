@@ -5,11 +5,11 @@
  * Description: This Plugin is used to generate custom code for Wordpress.
  * Version: 1.0
  * Author: Pradeep Singh
- * Author URI: http://URI_Of_The_Plugin_Author
+ * Author URI: http://PRADEEPSINGH
  * License: A "Slug" license name e.g. GPL2
  */
 
-if(!defined('ABSPATH')) exit;  //Exit if accessed directly.
+if(!defined('ABSPATH')) exit;
 
 if(!class_exists('CodeGenerator'))
 {
